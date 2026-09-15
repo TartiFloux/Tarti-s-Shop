@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tarti's Shop — Modèles 3D</title>
+<meta name="description" content="Modèles 3D à télécharger : sculptures, objets et props prêts pour l'impression ou l'intégration.">
+<link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <nav>
+    <a href="#" class="logo-link"><img src="assets/logo.svg" alt="Tarti's Shop"></a>
+    <div class="nav-links">
+      <a href="#catalogue">Catalogue</a>
+      <a href="#formats">Formats</a>
+      <a href="#a-propos">À propos</a>
+    </div>
+    <button class="cart-btn" id="cart-toggle">
+      Panier · <span id="cart-count">0</span>
+    </button>
+  </nav>
+
+  <header class="hero">
+    <div>
+      <div class="eyebrow">Fichiers 3D pour créateurs et makers</div>
+      <h1>Des formes pensées pour prendre volume.</h1>
+      <p>Une sélection de modèles 3D prêts à sculpter, imprimer ou intégrer — chaque fichier vérifié, léger, et pensé pour la lumière autant que pour la matière.</p>
+      <div class="hero-actions">
+        <a href="#catalogue" class="btn-primary">Voir le catalogue</a>
+        <a href="#a-propos" class="btn-ghost">Comment ça marche</a>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="prism p1"></div>
+      <div class="prism p2"></div>
+      <div class="prism p3"></div>
+    </div>
+  </header>
+
+  <div class="formats" id="formats">
+    <span>Formats disponibles</span>
+    <span class="tag">STL</span>
+    <span class="tag">OBJ</span>
+    <span class="tag">FBX</span>
+    <span class="tag">GLTF</span>
+    <span class="tag">Blend</span>
+  </div>
+
+  <section class="catalog" id="catalogue">
+    <div class="catalog-head">
+      <div>
+        <h2>Le catalogue</h2>
+        <p>Chaque modèle est vendu avec ses fichiers sources.</p>
+      </div>
+    </div>
+    <div class="grid" id="catalog-grid"><!-- généré par js/cart.js --></div>
+  </section>
+
+  <section class="cta-strip" id="a-propos">
+    <div class="cta-panel">
+      <div>
+        <h2>Chaque fichier, contrôlé à la main.</h2>
+        <p>Maillages vérifiés, échelles réelles — pas de mauvaise surprise à l'impression ou à l'import. Paiement sécurisé par PayPal.</p>
+      </div>
+      <a href="#catalogue" class="btn-primary">Explorer la collection</a>
+    </div>
+  </section>
+
+  <footer>
+    <img src="assets/logo.svg" alt="Tarti's Shop">
+    <div class="foot-links">
+      <a href="#">Licence</a>
+      <a href="#">Support</a>
+      <a href="#">Contact</a>
+    </div>
+    <div>© 2026 Tarti's Shop</div>
+  </footer>
+
+  <!-- ---------- PANIER ---------- -->
+  <div class="overlay" id="overlay"></div>
+  <aside class="drawer" id="drawer">
+    <div class="drawer-head">
+      <h2>Votre panier</h2>
+      <button class="close-btn" id="close-drawer" aria-label="Fermer">×</button>
+    </div>
+    <div id="cart-items"><!-- généré par js/cart.js --></div>
+    <div class="drawer-foot">
+      <div class="total-row">
+        <span>Total</span>
+        <span class="amount" id="cart-total">0.00 €</span>
+      </div>
+      <div id="paypal-button-container"></div>
+      <p class="checkout-note">Paiement sécurisé, traité directement par PayPal.</p>
+    </div>
+  </aside>
+
+  <div id="toast"></div>
+
+  <!-- ⚠️ Remplacez YOUR_PAYPAL_CLIENT_ID par votre Client ID PayPal (voir README.md) -->
+  <script src="https://www.paypal.com/sdk/js?client-id=YOUR_PAYPAL_CLIENT_ID&currency=EUR"></script>
+
+  <script src="js/products.js"></script>
+  <script src="js/cart.js"></script>
+  <script src="js/paypal.js"></script>
+</body>
+</html>
