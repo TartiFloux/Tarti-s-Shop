@@ -6,17 +6,20 @@ Boutique statique pour vendre des modèles 3D, avec panier et paiement PayPal. P
 
 ```
 tartis-shop/
-├── index.html
+├── index.html      → boutique + tiroir panier
+├── checkout.html    → page de paiement dédiée (bouton PayPal)
 ├── css/
 │   └── style.css
 ├── js/
 │   ├── products.js   → le catalogue (à modifier pour vos modèles)
-│   ├── cart.js        → logique du panier
-│   └── paypal.js       → intégration des paiements
+│   ├── cart.js        → logique du panier (partagée entre les deux pages)
+│   └── paypal.js       → intégration des paiements (rendu sur checkout.html)
 └── assets/
     ├── logo.svg
     └── icon.svg
 ```
+
+Le parcours d'achat : le client ajoute des modèles au panier depuis `index.html`, clique sur **Passer commande**, arrive sur `checkout.html` où il retrouve son panier et paie directement sur le site via le bouton PayPal (pas de redirection vers paypal.com, le paiement se fait en popup/inline tout en restant sur votre domaine).
 
 ## 1. Configurer PayPal
 
@@ -28,6 +31,8 @@ tartis-shop/
 ```html
 <script src="https://www.paypal.com/sdk/js?client-id=VOTRE_CLIENT_ID&currency=EUR"></script>
 ```
+
+Le SDK n'est chargé que dans `checkout.html` (c'est la seule page où le bouton de paiement apparaît).
 
 5. Testez d'abord en Sandbox avec un compte acheteur de test (fourni dans votre tableau de bord développeur), avant de repasser en Client ID **Live**.
 

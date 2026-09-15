@@ -1,5 +1,5 @@
 // Intégration PayPal — encaisse directement sur le compte PayPal renseigné
-// dans index.html via le paramètre "client-id" du SDK.
+// dans checkout.html via le paramètre "client-id" du SDK.
 //
 // ⚠️ Lisez le README avant mise en ligne : ce site étant hébergé sur
 // GitHub Pages (statique, pas de serveur), la capture de la commande se
@@ -17,15 +17,12 @@ function renderPayPalButtons(){
   container.innerHTML = "";
 
   const total = cartTotal();
-  if(total <= 0){
-    container.innerHTML = `<p class="checkout-note">Ajoutez un modèle au panier pour payer.</p>`;
-    return;
-  }
+  if(total <= 0) return;
 
   paypalButtonsInstance = paypal.Buttons({
     style: {
       layout: "vertical",
-      color: "black",
+      color: "gold",
       shape: "pill",
       label: "paypal"
     },
@@ -58,7 +55,6 @@ function renderPayPalButtons(){
     onApprove: function(data, actions){
       return actions.order.capture().then(function(details){
         localStorage.removeItem(CART_KEY);
-        renderCart();
         showConfirmation(details);
       });
     },
@@ -79,12 +75,16 @@ function renderPayPalButtons(){
 
 function showConfirmation(details){
   const name = details.payer && details.payer.name ? details.payer.name.given_name : "";
-  const container = document.getElementById("cart-items");
-  container.innerHTML = `
-    <div class="cart-empty">
-      <p style="color:#241F2E; font-weight:500; margin-bottom:6px;">Merci ${name} !</p>
-      <p>Votre commande est confirmée. Un e-mail de PayPal contenant le reçu vous a été envoyé — répondez-y pour recevoir vos fichiers, ou automatisez l'envoi via l'IPN/webhook PayPal (voir README).</p>
+  const checkoutPage = document.querySelector(".checkout-page");
+  if(!checkoutPage) return;
+
+  checkoutPage.innerHTML = `
+    <div class="panel" style="grid-column: 1 / -1; text-align:center; padding:60px 40px;">
+      <h2 style="font-family:'Plus Jakarta Sans',sans-serif; font-weight:700; font-size:1.8rem; margin-bottom:14px;">Merci ${name} ✦ votre commande est confirmée</h2>
+      <p style="color:var(--ink-dim); max-width:46ch; margin:0 auto 28px; line-height:1.6;">
+        Un e-mail de confirmation vous a été envoyé par PayPal. Vos fichiers 3D vous seront transmis
+        très prochainement — répondez à cet e-mail si vous avez la moindre question.
+      </p>
+      <a href="index.html" class="btn-primary">Retour à la boutique</a>
     </div>`;
-  document.getElementById("paypal-button-container").innerHTML = "";
-  document.getElementById("cart-total").textContent = "0.00 €";
 }
