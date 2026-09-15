@@ -12,7 +12,7 @@ function getCart(){
 function saveCart(cart){
   localStorage.setItem(CART_KEY, JSON.stringify(cart));
   renderCartUI();
-  if(typeof renderPayPalButtons === "function") renderPayPalButtons();
+  if(typeof renderPaymentPanel === "function") renderPaymentPanel();
 }
 
 function addToCart(productId){
@@ -133,7 +133,7 @@ function renderCatalog(){
   if(!grid) return;
   grid.innerHTML = PRODUCTS.map(p => `
     <div class="card">
-      <div class="thumb"><div class="shape ${p.shape}"></div></div>
+      <div class="thumb" onclick="openProductModal('${p.id}')">${p.images.length ? `<img src="${p.images[0]}" alt="${p.name}">` : `<div class="shape ${p.shape}"></div>`}</div>
       <div class="card-body">
         <h3>${p.name}</h3>
         <div class="pill-row">
@@ -143,7 +143,10 @@ function renderCatalog(){
         <div class="card-meta">
           <span class="price">${p.price.toFixed(2)} €</span>
         </div>
-        <button class="add-btn" onclick="handleAddClick(this, '${p.id}')">Ajouter au panier</button>
+        <div class="card-actions">
+          <button class="add-btn" onclick="handleAddClick(this, '${p.id}')">Ajouter au panier</button>
+          <button class="more-btn" onclick="openProductModal('${p.id}')">En savoir plus</button>
+        </div>
       </div>
     </div>
   `).join("");
@@ -172,7 +175,7 @@ function closeCart(){
 document.addEventListener("DOMContentLoaded", () => {
   renderCatalog();
   renderCartUI();
-  if(typeof renderPayPalButtons === "function") renderPayPalButtons();
+  if(typeof renderPaymentPanel === "function") renderPaymentPanel();
 
   const cartToggle = document.getElementById("cart-toggle");
   const closeDrawer = document.getElementById("close-drawer");

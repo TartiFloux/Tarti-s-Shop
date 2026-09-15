@@ -1,53 +1,58 @@
 # Tarti's Shop
 
-Boutique statique pour vendre des modèles 3D, avec panier et paiement PayPal. Prête à héberger sur GitHub Pages.
+Boutique statique pour vendre des modèles 3D, avec panier, fiches produits détaillées, avis clients, FAQ et paiement PayPal. Prête à héberger sur GitHub Pages.
 
 ## Structure du projet
 
 ```
 tartis-shop/
-├── index.html      → boutique + tiroir panier
-├── checkout.html    → page de paiement dédiée (bouton PayPal)
+├── index.html      → boutique, tiroir panier, fiches produit, avis
+├── checkout.html    → page de paiement dédiée (redirection PayPal)
+├── faq.html          → questions fréquentes
 ├── css/
 │   └── style.css
 ├── js/
-│   ├── products.js   → le catalogue (à modifier pour vos modèles)
-│   ├── cart.js        → logique du panier (partagée entre les deux pages)
-│   └── paypal.js       → intégration des paiements (rendu sur checkout.html)
+│   ├── products.js   → le catalogue (à modifier pour vos modèles + photos)
+│   ├── reviews.js      → les avis clients affichés sur la page d'accueil
+│   ├── cart.js          → logique du panier (partagée entre les pages)
+│   ├── product-modal.js  → fiche détaillée + défilement des photos
+│   └── paiement.js        → génère le lien PayPal et le récapitulatif de commande
 └── assets/
     ├── logo.svg
-    └── icon.svg
+    ├── icon.svg
+    └── produits/        → vos photos de modèles (à créer)
 ```
 
-Le parcours d'achat : le client ajoute des modèles au panier depuis `index.html`, clique sur **Passer commande**, arrive sur `checkout.html` où il retrouve son panier et paie directement sur le site via le bouton PayPal (pas de redirection vers paypal.com, le paiement se fait en popup/inline tout en restant sur votre domaine).
+Le parcours d'achat : le client ajoute des modèles au panier depuis `index.html`, clique sur **Passer commande**, arrive sur `checkout.html` où il retrouve son panier, indique son e-mail, puis clique sur **Payer avec PayPal**. Il est alors redirigé vers une page PayPal avec **le montant déjà rempli** — il n'a plus qu'à confirmer le paiement.
 
 ## 1. Configurer PayPal
 
-1. Créez un compte développeur sur [developer.paypal.com](https://developer.paypal.com) (utilisez votre compte PayPal habituel, celui qui recevra les paiements).
-2. Dans **My Apps & Credentials**, créez une application (mode **Sandbox** pour tester, **Live** pour encaisser réellement).
-3. Copiez le **Client ID** généré.
-4. Dans `index.html`, remplacez `YOUR_PAYPAL_CLIENT_ID` par ce Client ID :
+Ce système utilise **PayPal.me**, qui ne nécessite ni compte développeur ni backend : c'est un simple lien vers une page PayPal pré-remplie avec le montant.
 
-```html
-<script src="https://www.paypal.com/sdk/js?client-id=VOTRE_CLIENT_ID&currency=EUR"></script>
+1. Créez votre lien sur [paypal.com/paypalme](https://www.paypal.com/paypalme/) avec votre compte PayPal habituel (celui qui recevra les paiements).
+2. Notez le pseudo choisi (ex. `paypal.me/monpseudo` → le pseudo est `monpseudo`).
+3. Ouvrez `js/paiement.js` et remplacez la valeur suivante :
+
+```js
+const PAYPAL_ME_USERNAME = "VotrePseudoPayPal";
 ```
 
-Le SDK n'est chargé que dans `checkout.html` (c'est la seule page où le bouton de paiement apparaît).
-
-5. Testez d'abord en Sandbox avec un compte acheteur de test (fourni dans votre tableau de bord développeur), avant de repasser en Client ID **Live**.
+4. C'est tout : le bouton **Payer avec PayPal** de `checkout.html` construira automatiquement un lien du type `paypal.me/monpseudo/34.00EUR` avec le total exact du panier.
 
 ### Important à savoir
 
-Ce site est hébergé sur GitHub Pages, qui ne fait que servir des fichiers statiques (pas de serveur). Le paiement fonctionne donc entièrement **côté client** via le SDK JavaScript de PayPal : la commande est créée puis capturée directement dans le navigateur de l'acheteur, et l'argent arrive sur votre compte PayPal.
+Ce site est hébergé sur GitHub Pages, qui ne fait que servir des fichiers statiques (pas de serveur). Le paiement est donc une **redirection vers PayPal**, pas une intégration en popup : l'acheteur quitte temporairement votre site, paie sur PayPal, puis peut revenir. PayPal.me ne transmet pas automatiquement le détail du panier — c'est pourquoi la page de paiement affiche un **récapitulatif à copier** (référence de commande + articles + total) que l'acheteur colle dans le champ note de PayPal, ou vous transmet par e-mail.
 
-C'est un fonctionnement tout à fait valable pour une petite boutique. Sa seule limite : rien ne vérifie côté serveur que le montant envoyé à PayPal correspond exactement au panier (un utilisateur très motivé pourrait bricoler le montant via la console de son navigateur). Pour une boutique avec un volume de ventes plus important, l'étape suivante serait de déplacer `createOrder` et la capture vers une fonction serverless (Cloudflare Workers, Vercel, Netlify Functions...) qui recalcule le total à partir des `id` produits plutôt que de faire confiance au total envoyé par le navigateur.
+Comme rien ne confirme automatiquement le paiement côté site, la livraison des fichiers reste **manuelle** (voir section suivante) : vous vérifiez la réception du virement sur votre compte PayPal, puis envoyez les fichiers à l'adresse e-mail indiquée par l'acheteur.
 
 ## 2. Livrer les fichiers après achat
 
-PayPal envoie un e-mail de reçu à l'acheteur, mais n'envoie pas vos fichiers 3D automatiquement. Deux options simples :
+PayPal vous notifie de la réception du virement (e-mail + votre tableau de bord PayPal), mais n'envoie pas vos fichiers 3D automatiquement — la livraison est **manuelle** avec ce système :
 
-- **Manuel** : vous recevez une notification de vente, vous répondez à l'acheteur par e-mail avec les fichiers.
-- **Automatique** : utilisez les [webhooks PayPal](https://developer.paypal.com/api/rest/webhooks/) pour déclencher l'envoi automatique (nécessite un petit service côté serveur, par exemple une fonction serverless qui reçoit l'événement `CHECKOUT.ORDER.APPROVED` et envoie l'e-mail avec un lien de téléchargement).
+1. Vous recevez le paiement sur PayPal, avec la référence de commande dans la note (si l'acheteur l'a bien collée) ou par e-mail séparé.
+2. Vous répondez à l'adresse e-mail indiquée par l'acheteur sur la page de paiement, en joignant les fichiers correspondant à sa commande.
+
+Si votre volume de ventes augmente, vous pourrez plus tard automatiser cette étape avec un service tiers (formulaire + envoi automatique, ou un vrai backend de paiement), mais ce n'est pas nécessaire pour démarrer.
 
 ## 3. Modifier le catalogue
 
@@ -58,27 +63,57 @@ PayPal envoie un e-mail de reçu à l'acheteur, mais n'envoie pas vos fichiers 3
   id: "identifiant-unique",
   name: "Nom du modèle",
   category: "Catégorie affichée",
-  price: 29,              // en euros, sans symbole
+  price: 29,                // en euros, sans symbole
   specs: "50k tris · STL",
-  shape: "s1"              // s1 à s6, ou dupliquez une classe .shape dans style.css pour une nouvelle forme
+  shape: "s1",               // s1 à s6, utilisé tant qu'aucune photo n'est ajoutée
+  description: "Un texte plus détaillé, affiché dans la fiche « En savoir plus ».",
+  images: []                  // vos photos, voir ci-dessous
 }
 ```
 
-Les vignettes sont actuellement des formes générées en CSS (pas de vraies images). Pour utiliser vos propres rendus/photos, remplacez dans `js/cart.js` la ligne :
+### Ajouter des photos à un modèle
+
+1. Créez un dossier `assets/produits/` s'il n'existe pas déjà.
+2. Déposez-y vos photos, par exemple `fragment-12-1.jpg`, `fragment-12-2.jpg`, etc.
+3. Listez-les dans le produit correspondant, dans l'ordre d'affichage souhaité :
 
 ```js
-<div class="thumb"><div class="shape ${p.shape}"></div></div>
+images: [
+  "assets/produits/fragment-12-1.jpg",
+  "assets/produits/fragment-12-2.jpg",
+  "assets/produits/fragment-12-3.jpg"
+]
 ```
 
-par :
+La première photo devient la vignette du catalogue. S'il y a plusieurs photos, la fiche détaillée ("En savoir plus") affiche des flèches et des points pour les faire défiler. Si `images` reste vide (`[]`), la forme générée en CSS est utilisée à la place — vous pouvez donc ajouter les photos plus tard, modèle par modèle.
+
+## 4. Modifier les avis clients
+
+Éditez `js/reviews.js`. Chaque avis :
 
 ```js
-<div class="thumb"><img src="assets/produits/${p.id}.jpg" alt="${p.name}"></div>
+{
+  name: "Prénom N.",
+  note: 5,                    // de 1 à 5
+  productId: "fragment-12",   // facultatif, doit correspondre à un id de products.js
+  text: "Le texte de l'avis."
+}
 ```
 
-et ajoutez vos images dans `assets/produits/`.
+## 5. Modifier la FAQ
 
-## 4. Déployer sur GitHub Pages
+Éditez directement `faq.html` : chaque question est un bloc
+
+```html
+<details class="faq-item">
+  <summary>Votre question ?</summary>
+  <div class="faq-answer"><p>Votre réponse.</p></div>
+</details>
+```
+
+Copiez-collez ce bloc pour ajouter une question, ou modifiez le texte d'un bloc existant.
+
+## 6. Déployer sur GitHub Pages
 
 1. Créez un dépôt GitHub et déposez tout le contenu de ce dossier à la racine.
 2. Dans le dépôt : **Settings → Pages**.
@@ -87,6 +122,6 @@ et ajoutez vos images dans `assets/produits/`.
 
 GitHub Pages sert le site en HTTPS par défaut, ce qui est requis par PayPal.
 
-## 5. Personnaliser le logo
+## 7. Personnaliser le logo
 
 `assets/logo.svg` et `assets/icon.svg` sont des SVG modifiables dans n'importe quel éditeur (Figma, Illustrator, ou directement dans un éditeur de texte — ce sont des balises `<polygon>` et `<text>`). Les couleurs sont pilotées par les dégradés définis en haut de chaque fichier.

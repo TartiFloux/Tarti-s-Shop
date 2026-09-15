@@ -19,6 +19,7 @@
       <a href="index.html#catalogue">Catalogue</a>
       <a href="index.html#formats">Formats</a>
       <a href="index.html#a-propos">À propos</a>
+      <a href="faq.html">FAQ</a>
     </div>
     <a href="index.html" class="cart-btn">Panier · <span id="cart-count">0</span></a>
   </nav>
@@ -46,8 +47,19 @@
           <span class="amount" id="checkout-total">0.00 €</span>
         </div>
 
-        <div id="paypal-button-container"></div>
-        <p class="checkout-note">Paiement sécurisé, traité directement par PayPal — vous restez sur le site.</p>
+        <div class="order-ref">Référence de commande : <strong id="order-id">—</strong></div>
+
+        <label class="field-label" for="buyer-email">Votre e-mail (pour recevoir les fichiers)</label>
+        <input type="email" id="buyer-email" class="field-input" placeholder="vous@exemple.com" required>
+
+        <button class="btn-copy" id="copy-recap-btn" type="button">Copier le récapitulatif de commande</button>
+        <button class="btn-buy pay-btn" id="pay-paypal-btn" type="button">Payer avec PayPal</button>
+
+        <p class="checkout-note">Vous allez être redirigé·e vers PayPal avec le montant déjà rempli. Collez le récapitulatif copié dans le champ note du paiement, puis validez.</p>
+
+        <div class="payment-confirm-note" id="payment-confirm-note">
+          Paiement lancé sur PayPal ✓ — une fois le virement confirmé, vos fichiers vous seront envoyés à l'adresse indiquée. Gardez la référence <strong id="order-id-echo"></strong> sous la main en cas de question.
+        </div>
       </div>
 
       <div class="panel empty-checkout" id="empty-checkout" style="display:none;">
@@ -68,11 +80,8 @@
 
   <div id="toast"></div>
 
-  <!-- ⚠️ Remplacez YOUR_PAYPAL_CLIENT_ID par votre Client ID PayPal (voir README.md) -->
-  <script src="https://www.paypal.com/sdk/js?client-id=AaqyT8hZEC-_xxvqixUBt4_N9puWKa_jlJYcwooJ6SFEY4Yt2lR-UfZPIw56noDUDC6FIxblacgwtm9c&currency=EUR"></script>
-
   <script src="js/products.js"></script>
   <script src="js/cart.js"></script>
-  <script src="js/paypal.js"></script>
+  <script src="js/paiement.js"></script>
 </body>
 </html>

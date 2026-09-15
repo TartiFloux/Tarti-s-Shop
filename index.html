@@ -20,6 +20,8 @@
       <a href="#catalogue">Catalogue</a>
       <a href="#formats">Formats</a>
       <a href="#a-propos">À propos</a>
+      <a href="#avis">Avis</a>
+      <a href="faq.html">FAQ</a>
     </div>
     <button class="cart-btn" id="cart-toggle">
       Panier · <span id="cart-count">0</span>
@@ -62,6 +64,14 @@
     <div class="grid" id="catalog-grid"><!-- généré par js/cart.js --></div>
   </section>
 
+  <section class="reviews" id="avis">
+    <div class="reviews-head">
+      <h2>Ce qu'en disent les acheteurs</h2>
+      <p>Des avis vérifiés, laissés après réception des fichiers.</p>
+    </div>
+    <div class="reviews-grid" id="reviews-grid"><!-- généré par js/reviews.js --></div>
+  </section>
+
   <section class="cta-strip" id="a-propos">
     <div class="cta-panel">
       <div>
@@ -100,9 +110,33 @@
     </div>
   </aside>
 
+  <!-- ---------- FICHE PRODUIT ("En savoir plus") ---------- -->
+  <div class="overlay" id="product-overlay"></div>
+  <div class="modal" id="product-modal">
+    <button class="close-btn modal-close" id="close-modal" aria-label="Fermer" onclick="closeProductModal()">×</button>
+    <div class="modal-visual" id="modal-visual"></div>
+    <div class="modal-nav" id="modal-nav">
+      <button aria-label="Photo précédente" onclick="shiftModalImage(-1)">‹</button>
+      <div class="modal-dots" id="modal-dots"></div>
+      <button aria-label="Photo suivante" onclick="shiftModalImage(1)">›</button>
+    </div>
+    <div class="modal-body">
+      <span class="pill pill-accent" id="modal-category"></span>
+      <h2 id="modal-name"></h2>
+      <p class="modal-specs" id="modal-specs"></p>
+      <p class="modal-description" id="modal-description"></p>
+      <div class="modal-foot">
+        <span class="price" id="modal-price"></span>
+        <button class="add-btn" id="modal-add-btn">Ajouter au panier</button>
+      </div>
+    </div>
+  </div>
+
   <div id="toast"></div>
 
   <script src="js/products.js"></script>
   <script src="js/cart.js"></script>
+  <script src="js/product-modal.js"></script>
+  <script src="js/reviews.js"></script>
 </body>
 </html>
