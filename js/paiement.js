@@ -1,7 +1,7 @@
 // Paiement — redirige l'acheteur vers PayPal (paypal.me) avec le montant déjà rempli.
 // ⚠️ Configuration : remplacez la valeur ci-dessous par votre pseudo PayPal.me
 // (créez-le sur https://www.paypal.com/paypalme/ si vous n'en avez pas encore).
-const PAYPAL_ME_USERNAME = "VotrePseudoPayPal";
+const PAYPAL_ME_USERNAME = "paypal.me/tartifloux";
 
 let currentOrderId = null;
 
