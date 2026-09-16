@@ -7,9 +7,9 @@ const PAYPAL_ME_USERNAME = "tartifloux";
 
 // ⚠️ Configuration e-mail (EmailJS) : voir le README, section "Recevoir un e-mail par commande".
 const EMAILJS_CONFIG = {
-  publicKey: "VOTRE_PUBLIC_KEY",
-  serviceId: "VOTRE_SERVICE_ID",
-  templateId: "VOTRE_TEMPLATE_ID"
+  publicKey: "5Lj4mel83G-ca-gb2IyQt",
+  serviceId: "service_ou8kebo",
+  templateId: "template_51qofeh"
 };
 const SHOP_OWNER_EMAIL = "tartifloux667@gmail.com";
 
